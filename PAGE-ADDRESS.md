@@ -8,7 +8,4 @@ example:
 ```bash
 [my website](https://rick-astley.github.io)
 ```
-
-```bash
-[DietersWebsite](https://dietban19.github.io)
-```
+My Website: [Dieter's Website](https://dietban19.github.io)
