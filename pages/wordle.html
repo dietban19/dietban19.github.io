@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<script src="https://kit.fontawesome.com/ce07792853.js" crossorigin="anonymous"></script>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Wordle</title>
+    <link rel="stylesheet" href="./css/wordleStyle.css" />
+  </head>
+
+  <body class = "">
+    <header>
+      <div class="navigations">
+        <nav class = "nav-bar">
+          <ul>
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
+          <h1>Wordle</h1>
+          <ul>
+            <li><button class = "theme-toggle-button"><i id="toggleDark"class="fa-solid fa-circle-half-stroke"></i></button></li>
+            <li><button class = "hint-toggle-button"><i  class="fa-solid fa-question"></i></button>
+            <li><button class = "help-toggle-button"><i class="fa-solid fa-circle-info"></i></button></li>
+            <!-- <li><a href="#"><i id="toggleDark"class="fa-solid fa-circle-half-stroke"></i></a></li> -->
+            <!-- <li><a href="#"><i class="fa-solid fa-question"></i></a> </li> -->
+
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main>
+        <div class = "modal" id = "modal">
+          <div class = "modal-header">
+            <div class = "howToTitle">How to Play</div>
+            <button data-close-button class = "close">&times;</button>
+          </div>
+          <div class = "infoBody">
+            <ul>
+              <li>Start Typing. The letters will appear in the boxes</li>
+              <li>Remove letters with Backspace</li>
+              <li>Hit Enter/Return to submit answer</li>
+              <li>Letters with green background are in right spot</li>
+              <li>Letters with yellow background exists in the word, but are in the wrong spots</li>
+              <li>Letters with a gray background does not exist in the word</li>
+              <li>If you need a hint, press the ? button</li>
+            </ul>
+          </div>
+        </div>
+        <div class = "ending" id = "ending">
+        <div class = innerContainer>
+          <div class = "imageCongrats">
+          </div><img src="https://res.cloudinary.com/mkf/image/upload/v1675467141/ENSF-381/labs/congrats_fkscna.gif" alt="" width="150px">
+          <div class = "ending-header">
+            <div class = "endTitle">Congratulations You Guess the Correct Word! It was:
+            </div>
+            <button data-close-button class = "endClose">&times;</button>
+          </div>
+        </div>
+          <div class = "endingBody">
+            <ul>
+            </ul>
+          </div>
+        </div>
+      <div id="gameContainer">
+        <h1 id = "solution"></h1>
+      </div>
+      <div class= "overlay"id = "overlay"></div>
+
+    </main>
+
+
+    <script src="./javascript/wordle.js"></script>
+    <div class = "hints">
+    </div>
+  <footer>
+
+     <p class = "copyright">Copyright © 2023 Dieter Banaag</p>
+  </footer>
+
+</body>
+
+</html>
