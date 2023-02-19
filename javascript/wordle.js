@@ -1,4 +1,5 @@
 
+
 let gameover = false;
 let row = 0;
 let col = 0;
@@ -7,7 +8,8 @@ let height = 4;
 var word;
 let wordDictionary;
 let hint;
-
+let index;
+let randWord;
 
 
 function generateSquares(grid, row, col, letter = ''){
@@ -18,7 +20,6 @@ function generateSquares(grid, row, col, letter = ''){
   grid.appendChild(square);
   return square;
 }
-
 function generateGrid(gameContainer){ 
   const grid = document.createElement('div'); // draws more versions of grid instead of typing in html
   grid.className = 'gameGrid';
@@ -31,7 +32,6 @@ function generateGrid(gameContainer){
   gameContainer.appendChild(grid);
 }
 function userInputs(){
-
   document.addEventListener("keyup", (e)=>{
     const keyPress = e.code;
     if(gameover) return;
@@ -41,11 +41,12 @@ function userInputs(){
       if(col<width){
         let tile = document.getElementById(`gameBox${row}${col}`);
         if(tile.innerText==""){
-          tile.innerText = keyPress[3];
+          tile.innerText = event.key;
           col+=1;
         } 
       } 
     }
+    
 
     // BACKSPACE
     else if (keyPress=="Backspace"){
@@ -83,9 +84,11 @@ function userInputs(){
         window.alert("first complete the word");
       }
     }
+
     if(!gameover &&(row)==height){
       gameover=true;
-      document.getElementById("solution").innerText = word;
+      let solutions = document.getElementById("solution");
+      solutions.innerText = "You Missed the Word " + word + " and Lost!";
     }
   })
 }
@@ -110,12 +113,41 @@ function newEnter(){
     if (correct == width){
       gameover = true;
       setTimeout(congrats, 600);  //delay the call to the congrats so the word can be revealed fully
-
     }
   }
 }
 
+
+//  THIS FUNCTION GETS HINTS
+function getHint(){
+  let myHint = document.querySelector(".hints");
+  myHint.innerHTML = hint;  
+}
+function resetGame() {
+  
+  let solutions = document.getElementById("solution");
+      solutions.innerText = "";
+  
+  gameover = false;
+  row = 0;
+  col = 0;
+  word = '';
+  hint = '';
+  index = 0;
+  randWord = null;
+  const gameContainer = document.getElementById('gameContainer');
+  gameContainer.innerHTML = '';
+  document.removeEventListener("keyup", userInputs); // remove the event listener
+  getDictionaryWord();
+
+}
+
 async function getDictionaryWord(){
+  const buttonStartOver = document.getElementById(`startOverButton`);
+  buttonStartOver.disabled = true;
+  buttonStartOver.innerText = "Loading..";
+  
+
   // api call to get dictionary, use await 
   let data = 0;
   if(!wordDictionary){ 
@@ -126,7 +158,6 @@ async function getDictionaryWord(){
       },
   });
 
-
   if(res.ok){
     data = await res.json();
     // data = {0:{word: "Pain", hint: "hurt"}, 1:{word: "HTML", hint: "coding"}, 2:{word:"RAIN", hint: "water water"}};
@@ -136,18 +167,42 @@ async function getDictionaryWord(){
       console.log("API call failed:", res.status, res.statusText);
     }
   }
-    const index = Number.parseInt(Math.random() * wordDictionary.length)
-    const randWord = wordDictionary[index];
+  if(wordDictionary){
+    index = Number.parseInt(Math.random() * wordDictionary.length)
+    randWord = wordDictionary[index];
     word = randWord.word.toUpperCase();
     hint = randWord.hint;
-    console.log(word)
-}
 
-//  THIS FUNCTION GETS HINTS
-function getHint(){
-  let myHint = document.querySelector(".hints");
-  myHint.innerHTML = hint;  
-}
+    console.log(hint)
+    getHint();
+
+  buttonStartOver.innerText = "Start Over";
+
+  const startOver = document.querySelector(`.startOverButton`)
+  startOver.removeAttribute('disabled');
+  const gameGrid = document.querySelector('.gameGrid');
+  startOver.addEventListener('click', ()=> {
+  if (gameGrid) {
+    resetGame(); // add this line
+    generateGrid(gameContainer);
+    // userInputs();
+
+    // col = 0;
+    // row = 0;
+    // const gameContainer = document.getElementById('gameContainer');
+    // gameContainer.removeChild(gameGrid);
+    // document.getElementById("solution").innerText = ""
+    // startGame();
+  }
+
+  });
+    startOver.addEventListener('keydown', (event) => {
+      if (event.keyCode === 13) {
+        event.preventDefault(); // prevent the default button click behavior
+      }
+    });
+}}
+
 
 
   // After word is guessed, a popup will be shown to congratulate user
@@ -168,71 +223,67 @@ function congrats(){
       event.preventDefault(); // prevent the default button click behavior
     }
   });
+  
 }
 
-async function startGame() {
-  
-  console.log("e")
-  const gameContainer = document.getElementById('gameContainer');
+
+
+function startGame() {
+  resetGame();
   generateGrid(gameContainer);
-  await getDictionaryWord();
-  getHint();
   userInputs();
 
-
-  // button for dark/lightmode
-  const buttons = document.querySelector('.theme-toggle-button');
-  buttons.addEventListener('click', ()=> {
-    document.body.classList.toggle('dark')
-  })
-  buttons.addEventListener('keydown', (event) => {
-    if (event.keyCode === 13) {
-      event.preventDefault(); // prevent the default button click behavior
-    }
-  });
-
-
-
-// button for Hint
-  const button = document.querySelector('.hint-toggle-button');
-  button.addEventListener('click', ()=> {
-  document.querySelector('.hints').classList.toggle('show')});
-  button.addEventListener('keydown', (event) => {
-    if (event.keyCode === 13) {
-      event.preventDefault(); // prevent the default button click behavior
-    }
-
-  });
-
-  //button for HELP
-  const openButton = document.querySelector('.help-toggle-button');
-  openButton.addEventListener('click', ()=> {
-  document.querySelector('.modal').classList.add('active');
-  document.querySelector('.overlay').classList.add('active');
-});
-  openButton.addEventListener('keydown', (event) => {
-    if (event.keyCode === 13) {
-      event.preventDefault(); // prevent the default button click behavior
-    }
-});
-
-//button to close
-const closeButton = document.querySelector('.close');
-closeButton.addEventListener('click', ()=> {
-document.querySelector('.modal').classList.remove('active');
-document.querySelector('.overlay').classList.remove('active');
-});
-closeButton.addEventListener('keydown', (event) => {
-  if (event.keyCode === 13) {
-    event.preventDefault(); // prevent the default button click behavior
-  }
-});
-
-
-
-
-
-
 }
+   // button for dark/lightmode
+   const buttons = document.querySelector('.theme-toggle-button');
+   buttons.addEventListener('click', ()=> {
+     document.body.classList.toggle('dark')
+   });
+   buttons.addEventListener('keydown', (event) => {
+     if (event.keyCode === 13) {
+       event.preventDefault(); // prevent the default button click behavior
+     }
+   });
+ 
+ //button to close
+ const closeButton = document.querySelector('.close');
+ closeButton.addEventListener('click', ()=> {
+ document.querySelector('.modal').classList.remove('active');
+ document.querySelector('.overlay').classList.remove('active');
+ });
+ closeButton.addEventListener('keydown', (event) => {
+   if (event.keyCode === 13) {
+     event.preventDefault(); // prevent the default button click behavior
+   }
+ });
+ 
+ 
+   //button for HELP
+   const openButton = document.querySelector('.help-toggle-button');
+   openButton.addEventListener('click', ()=> {
+   document.querySelector('.modal').classList.add('active');
+   document.querySelector('.overlay').classList.add('active');
+ });
+   openButton.addEventListener('keydown', (event) => {
+     if (event.keyCode === 13) {
+       event.preventDefault(); // prevent the default button click behavior
+     }
+ });
+ 
+ 
+ // button for Hint
+ const button = document.querySelector('.hint-toggle-button');
+ 
+ button.addEventListener('click', ()=> {
+ document.querySelector('.hints').classList.toggle('show')});
+ button.addEventListener('keydown', (event) => {
+   if (event.keyCode === 13) {
+     event.preventDefault(); // prevent the default button click behavior
+   }
+ 
+ });
 
 startGame();
+
+ 
+
